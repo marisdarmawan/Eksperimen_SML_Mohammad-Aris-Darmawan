@@ -3,13 +3,17 @@ name: Automated Data Preprocessing
 on:
   push:
     paths:
-      - 'hotel_bookings_cleaned.csv'
       - 'preprocessing/automate_Mohammad-Aris-Darmawan.py'
   workflow_dispatch:  # Memungkinkan workflow dipicu secara manual via GitHub UI
 
 jobs:
   preprocess:
     runs-on: ubuntu-latest
+
+    # Memanggil credentials dari GitHub Secrets ke Environment Variables
+    env:
+      KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
+      KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
 
     steps:
     - name: Checkout Repository
@@ -23,7 +27,8 @@ jobs:
     - name: Install Dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install pandas numpy scikit-learn
+        # Tambahkan kagglehub di sini
+        pip install pandas numpy scikit-learn kagglehub
 
     - name: Run Preprocessing Script
       run: |
@@ -34,5 +39,5 @@ jobs:
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
         git add preprocessing/hotel_bookings_preprocessed.csv
-        git commit -m "Auto-update: Generate dataset preprocessed terbaru" || echo "Tidak ada perubahan data"
+        git commit -m "Auto-update: Generate dataset preprocessed terbaru via Kaggle API" || echo "Tidak ada perubahan data"
         git push
