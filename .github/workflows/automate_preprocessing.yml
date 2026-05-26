@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - 'preprocessing/automate_Mohammad-Aris-Darmawan.py'
+      - '.github/workflows/automate_preprocessing.yml' 
   workflow_dispatch:
 
 permissions:
@@ -20,6 +21,9 @@ jobs:
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v3
+      with:
+        ref: main         
+        fetch-depth: 0    
 
     - name: Set up Python
       uses: actions/setup-python@v4
@@ -40,11 +44,14 @@ jobs:
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
         
-        # Tarik data terbaru dari server SEBELUM melakukan commit
+        # Tarik data terbaru dari server SEBELUM melakukan penambahan file
         git pull origin main --rebase
         
+        # Tambahkan file preprocessed
         git add preprocessing/hotel_bookings_preprocessed.csv
-        git commit -m "Auto-update: Generate dataset preprocessed terbaru via Kaggle API" || echo "Tidak ada perubahan data"
         
-        # Paksa push ke branch main
+        # Lakukan commit
+        git commit -m "Auto-update: Generate dataset preprocessed terbaru" || echo "Tidak ada perubahan data"
+        
+        # Paksa dorong ke branch main
         git push origin main
